@@ -101,29 +101,5 @@ extension Array where Element == Card {
         }
         return returnCards
     }
-    
-//    /// Returns an array that contains given amount of random elements from self
-//    mutating func getRandomElement(amountOf: Int) -> [Element] {
-//        var returnCards = [Card]()
-//        for _ in 1...amountOf {
-//            returnCards.append(self.remove(at: self.count.intArc4Random))
-//        }
-//        return returnCards
-//    }
 }
-//
-//extension Int {
-//
-//    /// Get a random integer that's upper bound is self
-//    var intArc4Random: Int {
-//        get {
-//            if self > 0 {
-//                return Int(arc4random_uniform(UInt32(self)))
-//            } else if self < 0 {
-//                return -Int(arc4random_uniform(UInt32(abs(self))))
-//            } else {
-//                return 0
-//            }
-//        }
-//    }
-//}
+
