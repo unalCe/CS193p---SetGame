@@ -10,10 +10,11 @@ import Foundation
 
 class SetGame
 {
-    var upperCardLimit = 24
-    var lowerCardLimit = 12
-    var score = 0
-    var gameRange = 12 {
+    // MARK: - Variables
+    private var upperCardLimit = 24
+    private var lowerCardLimit = 12
+    var score: Int
+    var gameRange: Int {
         didSet {
             if gameRange > upperCardLimit { gameRange = upperCardLimit }
             if gameRange < lowerCardLimit { gameRange = lowerCardLimit }
@@ -23,44 +24,56 @@ class SetGame
     private(set) var deck = [Card]()
     private(set) var cardsOnTable: [Card]
     
-    private var selectedCards: [Card] { get { return cardsOnTable.filter() { $0.isSelected } } }
-    
- //   private var matchedCards: [Card] { get { return deck.filter() { $0.isMatched } } }
-    
-    private var selectedCount: Int { get { return selectedCards.filter(){ !$0.isMatched } .count } }
-    
-    func selectCard(at index: Int) {
-        assert(deck.indices.contains(index), "There is no such index in deck.")
-        
-        if selectedCount == 3 {
-            // Match ise match et
-            
-            if checkIfMatch() {
-                print("BUMMM BE YERAG")
-                score += 48 / gameRange
-                print("+ \(48/gameRange) puan")
-            } else {
-                score -= Int(0.3 * Double(gameRange))
-                print("- \(Int(0.41 * Double(gameRange))) puan")
-            }
-            
-            // Clear selected cards.
-            cardsOnTable = cardsOnTable.indices.map() { cardsOnTable[$0].isSelected = false; return cardsOnTable[$0] }
-        }
-        
-        if !(cardsOnTable[index].isSelected) {
-            cardsOnTable[index].isSelected = true
-            print("----> sayim ", selectedCount)
-            
-        } else if selectedCount < 3 {
-            // deselect
-            cardsOnTable[index].isSelected = false
-            score -= 1
-            print("\(cardsOnTable[index]) seçilmekten vazgeçildi.")
+    private var selectedCards: [Card] {
+        get {
+            return cardsOnTable.filter() { $0.isSelected }
         }
     }
     
-    /// Returns true or false according to if all selected cards are matching
+    // MARK: - Functions
+/// Changes match cards from the deck, if the cards are not match then reset the selected cards to initial values.
+    private func changeMatchedCards() {
+        cardsOnTable.indices.forEach() {
+            if cardsOnTable[$0].isMatched ?? false {
+                cardsOnTable[$0] = deck.removeFirst()
+            } else {
+                cardsOnTable[$0].isSelected = false; cardsOnTable[$0].isMatched = nil
+            }
+        }
+    }
+    
+/**
+     Selects the card and checks if it's set or not. Changes the score accordingly.
+     - parameter index: Index of selected card on the table
+*/
+    func selectCard(at index: Int) {
+        if selectedCards.count == 3 { changeMatchedCards() }
+        
+        if !(cardsOnTable[index].isSelected) {
+            cardsOnTable[index].isSelected = true
+            
+            if selectedCards.count == 3 {
+                // Match ise match et
+                
+                if checkIfMatch() {
+                    score += 60 / gameRange
+                    cardsOnTable.indices.forEach() { if cardsOnTable[$0].isSelected { cardsOnTable[$0].isMatched = true } }
+                } else {
+                    score -= Int(0.3 * Double(gameRange))
+                    cardsOnTable.indices.forEach() { if cardsOnTable[$0].isSelected { cardsOnTable[$0].isMatched = false } }
+                }
+            }
+        } else {
+            // deselect
+            cardsOnTable[index].isSelected = false
+            score -= 1
+        }
+    }
+    
+/**
+     Returns true or false according to if all selected cards are set or not
+     - returns: Bool - Set or not
+ */
     private func checkIfMatch() -> Bool {
         var numbers = Set<Card.Number>()
         var shapes = Set<Card.Shape>()
@@ -75,7 +88,11 @@ class SetGame
         return isSet
     }
     
+/// Create the deck then shuffle. After that, fill up the table considering game range
     init() {
+        deck = []
+        gameRange = lowerCardLimit
+        score = 0
         for number in Card.Number.allCases {
             for shape in Card.Shape.allCases {
                 for color in Card.Color.allCases {
@@ -90,9 +107,8 @@ class SetGame
         cardsOnTable = deck.getFirst(amountOf: gameRange)
     }
 }
-
+// MARK: -
 extension Array where Element == Card {
-    
     /// Returns given amount of elements from beginning of the array, and removes them.
     mutating func getFirst(amountOf: Int) -> [Element] {
         var returnCards = [Element]()

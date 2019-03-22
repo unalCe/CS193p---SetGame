@@ -17,25 +17,7 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Ht-Ic-keP">
-                                <rect key="frame" x="72" y="305.5" width="231.5" height="56"/>
-                                <attributedString key="attributedText">
-                                    <fragment content="Bekle Ulan">
-                                        <attributes>
-                                            <font key="NSFont" size="48" name="BrushScriptMT"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
-                                        </attributes>
-                                    </fragment>
-                                </attributedString>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" red="0.95678228139999999" green="0.89450679570000002" blue="0.069639005549999994" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="0Ht-Ic-keP" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="HDB-wd-oAM"/>
-                            <constraint firstItem="0Ht-Ic-keP" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="ujD-5T-TyD"/>
-                        </constraints>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>

@@ -13,13 +13,14 @@ struct Card: Equatable {
     private var identifier: Int
     private static var identifierCount = 0
     
-    var isMatched = false
+    var isMatched: Bool?
     var isSelected = false
     var shape: Shape
     var color: Color
     var filling: Filling
     var number: Number
     
+    // MARK: - Functions
     /// Returns true if both card instance's identifiers equal. False otherwise.
     static func ==(lhs: Card, rhs: Card) -> Bool {
         return lhs.identifier == rhs.identifier
@@ -36,9 +37,8 @@ struct Card: Equatable {
         identifier = Card.getUniqueIdentifier()
     }
 }
-
+// MARK: -
 extension Card {
-    // MARK: - Card Properties
     enum Shape: CaseIterable {
         case triangle
         case round

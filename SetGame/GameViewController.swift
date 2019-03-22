@@ -11,8 +11,8 @@ import UIKit
 class GameViewController: UIViewController {
     // MARK: - Outlets
     @IBOutlet var cardCollection: [UIButton]!
-    
     @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet weak var dealThreeMoreCardsButton: UIButton!
     
     @IBAction func dealThreeMoreCards(_ sender: UIButton) {
         game.gameRange += 3
@@ -20,6 +20,9 @@ class GameViewController: UIViewController {
     }
     
     @IBAction func startNewGame(_ sender: UIButton) {
+        game = SetGame()
+        initializeDeckView()
+        updateViews()
     }
     
     @IBAction func chooseCard(_ sender: UIButton) {
@@ -32,29 +35,43 @@ class GameViewController: UIViewController {
     }
     
     // MARK: - Variables
-    let game = SetGame()
+    var game = SetGame()
     let defaultBorderWidth: CGFloat = 0.5
     let defaultBorderColor = UIColor.darkGray.cgColor
     let selectedBorderWidth: CGFloat = 3
-    let selectedBorderColor = UIColor.green.cgColor
+    var selectedBorderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1).cgColor
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        print(game.deck.description)
+        initializeDeckView()
         updateViews()
     }
     
-    // MARK: -
+    // MARK: - Functions
+    /// Remove all cards on the table
+    private func initializeDeckView() {
+        cardCollection.forEach() {$0.setAttributedTitle(NSAttributedString(string: ""), for: .normal); $0.layer.borderWidth = 0; $0.alpha = 0.3; $0.layer.cornerRadius = 6; $0.isEnabled = false }
+    }
+    
+    /// Update the cards on the table
     private func updateViews() {
         scoreLabel.text = "Score: \(game.score)"
+        dealThreeMoreCardsButton.isEnabled = game.gameRange < 24
+        
         for index in 0..<game.gameRange {
             let button = cardCollection[index]
             let card = game.cardsOnTable[index]
             
+            button.isEnabled = true; button.alpha = 1
             button.setAttributedTitle(attributedString(for: card), for: .normal)
-            button.layer.cornerRadius = 6
+            
+            if let cardMatch = card.isMatched {
+                selectedBorderColor = cardMatch ? #colorLiteral(red: 0, green: 1, blue: 0.08472456465, alpha: 1).cgColor : #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1).cgColor
+            } else {
+                selectedBorderColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1).cgColor
+            }
             
             if card.isSelected {
                 button.layer.borderWidth = selectedBorderWidth
@@ -66,6 +83,11 @@ class GameViewController: UIViewController {
         }
     }
 
+/**
+     Returns an attributed string for a given card
+     - parameter card: Card
+     - returns: Attributed string
+ */
     private func attributedString(for card: Card) -> NSAttributedString {
         var attributes = [NSAttributedString.Key : Any]()
         var cardColor = UIColor()
@@ -98,7 +120,6 @@ class GameViewController: UIViewController {
         
         // Number of characters
         cardString = String(repeating: cardString, count: card.number.rawValue)
-        
         return NSAttributedString(string: cardString, attributes: attributes)
     }
 }
