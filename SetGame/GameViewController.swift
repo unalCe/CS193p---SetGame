@@ -34,7 +34,11 @@ class GameViewController: UIViewController {
         }
     }
     // MARK: - Variables
-    
+    var game = SetGame()
+    let defaultBorderWidth: CGFloat = 0.5
+    let defaultBorderColor = UIColor.darkGray.cgColor
+    let selectedBorderWidth: CGFloat = 3
+    var selectedBorderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1).cgColor
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
