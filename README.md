@@ -1,5 +1,5 @@
 # SetGame
 
-This repo is for educational purposes. It's not completed yet. 
+This repo is for educational purposes. It includes my solution for assignment two. 
 
-ToDo: Replace matching cards, hide unused cards, handle end game logic, implement new game action, spruce up the comments.
+// TO DO: Handle end game logic.
