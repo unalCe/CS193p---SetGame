@@ -29,9 +29,9 @@ class SetGame
         }
     }
     
-    var matchedCards: [Card] {
+    var matchedCardsThatWillBeRemoved: [Card] {
         get {
-            return cardsOnTable.filter() { $0.isMatched ?? false }
+            return cardsOnTable.filter() { $0.isMatched ?? false && !$0.isSelected }
         }
     }
     
@@ -44,26 +44,21 @@ class SetGame
         if !deck.isEmpty {
             cardsOnTable[index] = deck.removeFirst()
         } else {
-            cardsOnTable.remove(at: index)
+            // This card is now a member of matchedCardsThatWillBeRemoved
+            cardsOnTable[index].isSelected = false
+            cardsOnTable[index].isMatched = true
         }
     }
     
     /// Changes match cards with new ones from the deck, if the cards are not match then reset the selected cards to initial values.
-    private func changedCardsSuccesfully() -> Bool {
-        var isDeckEmpty = false
+    private func changeMatchedCards() {
         for index in cardsOnTable.indices {
-            if index < cardsOnTable.count {
-                if cardsOnTable[index].isMatched ?? false {
-                    bringNewCardIfDeckNotEmpty(forIndex: index)
-                } else {
-                    cardsOnTable[index].isSelected = false; cardsOnTable[index].isMatched = nil
-                }
+            if cardsOnTable[index].isMatched ?? false {
+                bringNewCardIfDeckNotEmpty(forIndex: index)
             } else {
-                isDeckEmpty = true
-                gameRange -= 1
+                cardsOnTable[index].isSelected = false; cardsOnTable[index].isMatched = nil
             }
         }
-        return !isDeckEmpty
     }
     
 /**
@@ -72,7 +67,7 @@ class SetGame
 */
     func selectCard(at index: Int) {
         /// Return from function if the deck is empty.
-        if selectedCards.count == 3 { if !changedCardsSuccesfully() { return } }
+        if selectedCards.count == 3 { changeMatchedCards() }
         
         if !(cardsOnTable[index].isSelected) {
             cardsOnTable[index].isSelected = true
@@ -106,8 +101,7 @@ class SetGame
         for card in selectedCards {
             numbers.insert(card.number); shapes.insert(card.shape); colors.insert(card.color); fillings.insert(card.filling)
         }
-        let isSet = (numbers.count == 1 || numbers.count == 3) && (shapes.count == 1 || shapes.count == 3) && (colors.count == 1 || colors.count == 3) && (fillings.count == 1 || fillings.count == 3)
-        
+        let isSet = (numbers.count == 1 || numbers.count == 3) && (shapes.count == 1 || shapes.count == 3) && (colors.count == 1 || colors.count == 3) && (fillings.count == 1 || fillings.count == 3)    
         return true
     }
     
@@ -119,10 +113,10 @@ class SetGame
         for number in Card.Number.allCases {
             for shape in Card.Shape.allCases {
                 for color in Card.Color.allCases {
-                    for filling in Card.Filling.allCases {
-                        let card = Card(shape: shape, color: color, filling: filling, number: number)
+    //                for filling in Card.Filling.allCases {
+                        let card = Card(shape: shape, color: color, filling: .outlined, number: number)
                         deck += [card]
-                    }
+   //                 }
                 }
             }
         }

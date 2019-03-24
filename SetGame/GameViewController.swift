@@ -66,6 +66,10 @@ class GameViewController: UIViewController {
             let button = cardCollection[index]
             let card = game.cardsOnTable[index]
             
+            if game.matchedCardsThatWillBeRemoved.contains(card) {
+                continue
+            }
+            
             button.isEnabled = true; button.alpha = 1
             button.setAttributedTitle(attributedString(for: card), for: .normal)
             
