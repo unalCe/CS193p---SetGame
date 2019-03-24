@@ -12,12 +12,11 @@ class SetGame
 {
     // MARK: - Variables
     private var upperCardLimit = 24
-    private var lowerCardLimit = 12
+    private var standarCardCount = 12
     var score: Int
     var gameRange: Int {
         didSet {
             if gameRange > upperCardLimit { gameRange = upperCardLimit }
-            if gameRange < lowerCardLimit { gameRange = lowerCardLimit }
             cardsOnTable += deck.getFirst(amountOf: gameRange - cardsOnTable.count)
         }
     }
@@ -30,16 +29,41 @@ class SetGame
         }
     }
     
+    var matchedCards: [Card] {
+        get {
+            return cardsOnTable.filter() { $0.isMatched ?? false }
+        }
+    }
+    
     // MARK: - Functions
+    /**
+     If the deck is not empty, replaces the card in the table for a given index. Otherwise the card will be deleted.
+     - parameter index: Index of selected card on the table
+     */
+    private func bringNewCardIfDeckNotEmpty(forIndex index: Int) {
+        if !deck.isEmpty {
+            cardsOnTable[index] = deck.removeFirst()
+        } else {
+            cardsOnTable.remove(at: index)
+        }
+    }
+    
     /// Changes match cards with new ones from the deck, if the cards are not match then reset the selected cards to initial values.
-    private func changeMatchedCards() {
-        cardsOnTable.indices.forEach() {
-            if cardsOnTable[$0].isMatched ?? false {
-                cardsOnTable[$0] = deck.removeFirst()
+    private func changedCardsSuccesfully() -> Bool {
+        var isDeckEmpty = false
+        for index in cardsOnTable.indices {
+            if index < cardsOnTable.count {
+                if cardsOnTable[index].isMatched ?? false {
+                    bringNewCardIfDeckNotEmpty(forIndex: index)
+                } else {
+                    cardsOnTable[index].isSelected = false; cardsOnTable[index].isMatched = nil
+                }
             } else {
-                cardsOnTable[$0].isSelected = false; cardsOnTable[$0].isMatched = nil
+                isDeckEmpty = true
+                gameRange -= 1
             }
         }
+        return !isDeckEmpty
     }
     
 /**
@@ -47,14 +71,13 @@ class SetGame
      - parameter index: Index of selected card on the table
 */
     func selectCard(at index: Int) {
-        if selectedCards.count == 3 { changeMatchedCards() }
+        /// Return from function if the deck is empty.
+        if selectedCards.count == 3 { if !changedCardsSuccesfully() { return } }
         
         if !(cardsOnTable[index].isSelected) {
             cardsOnTable[index].isSelected = true
             
             if selectedCards.count == 3 {
-                // Match ise match et
-                
                 if checkIfMatch() {
                     score += 60 / gameRange
                     cardsOnTable.indices.forEach() { if cardsOnTable[$0].isSelected { cardsOnTable[$0].isMatched = true } }
@@ -85,13 +108,13 @@ class SetGame
         }
         let isSet = (numbers.count == 1 || numbers.count == 3) && (shapes.count == 1 || shapes.count == 3) && (colors.count == 1 || colors.count == 3) && (fillings.count == 1 || fillings.count == 3)
         
-        return isSet
+        return true
     }
     
 /// Create the deck then shuffle. After that, fill up the table considering game range
     init() {
         deck = []
-        gameRange = lowerCardLimit
+        gameRange = standarCardCount
         score = 0
         for number in Card.Number.allCases {
             for shape in Card.Shape.allCases {
@@ -112,10 +135,13 @@ extension Array where Element == Card {
     /// Returns given amount of elements from beginning of the array, and removes them.
     mutating func getFirst(amountOf: Int) -> [Element] {
         var returnCards = [Element]()
-        for _ in 0..<amountOf {
-            returnCards.append(self.removeFirst())
+        if 0 < amountOf && amountOf < self.count {
+            for _ in 0..<amountOf {
+                returnCards.append(self.removeFirst())
+            }
+            return returnCards
         }
-        return returnCards
+        return []
     }
 }
 

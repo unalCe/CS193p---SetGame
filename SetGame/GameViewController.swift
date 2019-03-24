@@ -15,6 +15,7 @@ class GameViewController: UIViewController {
     @IBOutlet weak var dealThreeMoreCardsButton: UIButton!
     
     @IBAction func dealThreeMoreCards(_ sender: UIButton) {
+        
         game.gameRange += 3
         updateViews()
     }
@@ -28,6 +29,7 @@ class GameViewController: UIViewController {
     @IBAction func chooseCard(_ sender: UIButton) {
         if let cardNo = cardCollection.index(of: sender) {
             game.selectCard(at: cardNo)
+            initializeDeckView()
             updateViews()
         } else {
             print("There is no such a card on the table.")
@@ -52,7 +54,7 @@ class GameViewController: UIViewController {
     // MARK: - Functions
     /// Remove all cards on the table
     private func initializeDeckView() {
-        cardCollection.forEach() {$0.setAttributedTitle(NSAttributedString(string: ""), for: .normal); $0.layer.borderWidth = 0; $0.alpha = 0.2; $0.layer.cornerRadius = 6; $0.isEnabled = false }
+        cardCollection.forEach() { $0.setAttributedTitle(nil, for: .normal); $0.layer.borderWidth = 0; $0.alpha = 0.2; $0.layer.cornerRadius = 6; $0.isEnabled = false }
     }
     
     /// Update the cards on the table
