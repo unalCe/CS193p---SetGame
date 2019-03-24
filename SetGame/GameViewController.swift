@@ -15,8 +15,13 @@ class GameViewController: UIViewController {
     @IBOutlet weak var dealThreeMoreCardsButton: UIButton!
     
     @IBAction func dealThreeMoreCards(_ sender: UIButton) {
-        
-        game.gameRange += 3
+        // Works nice. Looks meh.
+        if game.didThreeCardSelected {
+            game.changeMatchedCards()
+            initializeDeckView()
+        } else {
+            game.gameRange += 3
+        }
         updateViews()
     }
     
@@ -60,13 +65,14 @@ class GameViewController: UIViewController {
     /// Update the cards on the table
     private func updateViews() {
         scoreLabel.text = "Score: \(game.score)"
-        dealThreeMoreCardsButton.isEnabled = game.gameRange < 24
+        dealThreeMoreCardsButton.isEnabled = game.didThreeCardSelected || game.gameRange < 24 && game.deck.count > 2
         
         for index in 0..<game.gameRange {
             let button = cardCollection[index]
             let card = game.cardsOnTable[index]
             
             if game.matchedCardsThatWillBeRemoved.contains(card) {
+                // skip drawing this one
                 continue
             }
             

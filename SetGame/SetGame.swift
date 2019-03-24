@@ -11,8 +11,8 @@ import Foundation
 class SetGame
 {
     // MARK: - Variables
-    private var upperCardLimit = 24
-    private var standarCardCount = 12
+    private(set) var upperCardLimit = 24
+    private(set) var standarCardCount = 12
     var score: Int
     var gameRange: Int {
         didSet {
@@ -22,6 +22,10 @@ class SetGame
     }
     private(set) var deck = [Card]()
     private(set) var cardsOnTable: [Card]
+    
+    var didThreeCardSelected: Bool {
+        return selectedCards.count == 3
+    }
     
     private var selectedCards: [Card] {
         get {
@@ -51,7 +55,7 @@ class SetGame
     }
     
     /// Changes match cards with new ones from the deck, if the cards are not match then reset the selected cards to initial values.
-    private func changeMatchedCards() {
+     func changeMatchedCards() {
         for index in cardsOnTable.indices {
             if cardsOnTable[index].isMatched ?? false {
                 bringNewCardIfDeckNotEmpty(forIndex: index)
@@ -67,12 +71,12 @@ class SetGame
 */
     func selectCard(at index: Int) {
         /// Return from function if the deck is empty.
-        if selectedCards.count == 3 { changeMatchedCards() }
+        if didThreeCardSelected { changeMatchedCards() }
         
         if !(cardsOnTable[index].isSelected) {
             cardsOnTable[index].isSelected = true
             
-            if selectedCards.count == 3 {
+            if didThreeCardSelected {
                 if checkIfMatch() {
                     score += 60 / gameRange
                     cardsOnTable.indices.forEach() { if cardsOnTable[$0].isSelected { cardsOnTable[$0].isMatched = true } }
@@ -101,7 +105,7 @@ class SetGame
         for card in selectedCards {
             numbers.insert(card.number); shapes.insert(card.shape); colors.insert(card.color); fillings.insert(card.filling)
         }
-        let isSet = (numbers.count == 1 || numbers.count == 3) && (shapes.count == 1 || shapes.count == 3) && (colors.count == 1 || colors.count == 3) && (fillings.count == 1 || fillings.count == 3)    
+        let isSet = (numbers.count == 1 || numbers.count == 3) && (shapes.count == 1 || shapes.count == 3) && (colors.count == 1 || colors.count == 3) && (fillings.count == 1 || fillings.count == 3)
         return true
     }
     
