@@ -33,6 +33,7 @@ class GameViewController: UIViewController {
             print("There is no such a card on the table.")
         }
     }
+    
     // MARK: - Variables
     var game = SetGame()
     let defaultBorderWidth: CGFloat = 0.5
@@ -43,7 +44,7 @@ class GameViewController: UIViewController {
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
         initializeDeckView()
         updateViews()
     }
@@ -51,7 +52,7 @@ class GameViewController: UIViewController {
     // MARK: - Functions
     /// Remove all cards on the table
     private func initializeDeckView() {
-        cardCollection.forEach() {$0.setAttributedTitle(NSAttributedString(string: ""), for: .normal); $0.layer.borderWidth = 0; $0.alpha = 0.3; $0.layer.cornerRadius = 6; $0.isEnabled = false }
+        cardCollection.forEach() {$0.setAttributedTitle(NSAttributedString(string: ""), for: .normal); $0.layer.borderWidth = 0; $0.alpha = 0.2; $0.layer.cornerRadius = 6; $0.isEnabled = false }
     }
     
     /// Update the cards on the table

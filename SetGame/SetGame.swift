@@ -31,7 +31,7 @@ class SetGame
     }
     
     // MARK: - Functions
-/// Changes match cards from the deck, if the cards are not match then reset the selected cards to initial values.
+    /// Changes match cards with new ones from the deck, if the cards are not match then reset the selected cards to initial values.
     private func changeMatchedCards() {
         cardsOnTable.indices.forEach() {
             if cardsOnTable[$0].isMatched ?? false {
