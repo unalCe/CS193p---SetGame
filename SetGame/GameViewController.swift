@@ -15,7 +15,13 @@ class GameViewController: UIViewController {
     @IBOutlet weak var dealThreeMoreCardsButton: UIButton!
     
     @IBAction func dealThreeMoreCards(_ sender: UIButton) {
-        game.gameRange += 3
+        // Works nice. Looks meh.
+        if game.didThreeCardSelected {
+            game.changeMatchedCards()
+            initializeDeckView()
+        } else {
+            game.gameRange += 3
+        }
         updateViews()
     }
     
@@ -28,11 +34,13 @@ class GameViewController: UIViewController {
     @IBAction func chooseCard(_ sender: UIButton) {
         if let cardNo = cardCollection.index(of: sender) {
             game.selectCard(at: cardNo)
+            initializeDeckView()
             updateViews()
         } else {
             print("There is no such a card on the table.")
         }
     }
+    
     // MARK: - Variables
     var game = SetGame()
     let defaultBorderWidth: CGFloat = 0.5
@@ -43,7 +51,7 @@ class GameViewController: UIViewController {
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
         initializeDeckView()
         updateViews()
     }
@@ -51,17 +59,22 @@ class GameViewController: UIViewController {
     // MARK: - Functions
     /// Remove all cards on the table
     private func initializeDeckView() {
-        cardCollection.forEach() {$0.setAttributedTitle(NSAttributedString(string: ""), for: .normal); $0.layer.borderWidth = 0; $0.alpha = 0.3; $0.layer.cornerRadius = 6; $0.isEnabled = false }
+        cardCollection.forEach() { $0.setAttributedTitle(nil, for: .normal); $0.layer.borderWidth = 0; $0.alpha = 0.2; $0.layer.cornerRadius = 6; $0.isEnabled = false }
     }
     
     /// Update the cards on the table
     private func updateViews() {
         scoreLabel.text = "Score: \(game.score)"
-        dealThreeMoreCardsButton.isEnabled = game.gameRange < 24
+        dealThreeMoreCardsButton.isEnabled = game.didThreeCardSelected || (game.gameRange < 24 && game.deck.count > 2)
         
         for index in 0..<game.gameRange {
             let button = cardCollection[index]
             let card = game.cardsOnTable[index]
+            
+            if game.matchedCardsThatWillBeRemoved.contains(card) {
+                // skip drawing this one
+                continue
+            }
             
             button.isEnabled = true; button.alpha = 1
             button.setAttributedTitle(attributedString(for: card), for: .normal)

@@ -11,18 +11,21 @@ import Foundation
 class SetGame
 {
     // MARK: - Variables
-    private var upperCardLimit = 24
-    private var lowerCardLimit = 12
+    private(set) var upperCardLimit = 24
+    private(set) var standarCardCount = 12
     var score: Int
     var gameRange: Int {
         didSet {
             if gameRange > upperCardLimit { gameRange = upperCardLimit }
-            if gameRange < lowerCardLimit { gameRange = lowerCardLimit }
             cardsOnTable += deck.getFirst(amountOf: gameRange - cardsOnTable.count)
         }
     }
     private(set) var deck = [Card]()
     private(set) var cardsOnTable: [Card]
+    
+    var didThreeCardSelected: Bool {
+        return selectedCards.count == 3
+    }
     
     private var selectedCards: [Card] {
         get {
@@ -30,14 +33,34 @@ class SetGame
         }
     }
     
+    var matchedCardsThatWillBeRemoved: [Card] {
+        get {
+            return cardsOnTable.filter() { $0.isMatched ?? false && !$0.isSelected }
+        }
+    }
+    
     // MARK: - Functions
-/// Changes match cards from the deck, if the cards are not match then reset the selected cards to initial values.
-    private func changeMatchedCards() {
-        cardsOnTable.indices.forEach() {
-            if cardsOnTable[$0].isMatched ?? false {
-                cardsOnTable[$0] = deck.removeFirst()
+    /**
+     If the deck is not empty, replaces the card in the table for a given index. Otherwise the card will be deleted.
+     - parameter index: Index of selected card on the table
+     */
+    private func bringNewCardIfDeckNotEmpty(forIndex index: Int) {
+        if !deck.isEmpty {
+            cardsOnTable[index] = deck.removeFirst()
+        } else {
+            // This card is now a member of matchedCardsThatWillBeRemoved
+            cardsOnTable[index].isSelected = false
+            cardsOnTable[index].isMatched = true
+        }
+    }
+    
+    /// Changes match cards with new ones from the deck, if the cards are not match then reset the selected cards to initial values.
+     func changeMatchedCards() {
+        for index in cardsOnTable.indices {
+            if cardsOnTable[index].isMatched ?? false {
+                bringNewCardIfDeckNotEmpty(forIndex: index)
             } else {
-                cardsOnTable[$0].isSelected = false; cardsOnTable[$0].isMatched = nil
+                cardsOnTable[index].isSelected = false; cardsOnTable[index].isMatched = nil
             }
         }
     }
@@ -47,14 +70,13 @@ class SetGame
      - parameter index: Index of selected card on the table
 */
     func selectCard(at index: Int) {
-        if selectedCards.count == 3 { changeMatchedCards() }
+        /// Return from function if the deck is empty.
+        if didThreeCardSelected { changeMatchedCards() }
         
         if !(cardsOnTable[index].isSelected) {
             cardsOnTable[index].isSelected = true
             
-            if selectedCards.count == 3 {
-                // Match ise match et
-                
+            if didThreeCardSelected {
                 if checkIfMatch() {
                     score += 60 / gameRange
                     cardsOnTable.indices.forEach() { if cardsOnTable[$0].isSelected { cardsOnTable[$0].isMatched = true } }
@@ -84,22 +106,21 @@ class SetGame
             numbers.insert(card.number); shapes.insert(card.shape); colors.insert(card.color); fillings.insert(card.filling)
         }
         let isSet = (numbers.count == 1 || numbers.count == 3) && (shapes.count == 1 || shapes.count == 3) && (colors.count == 1 || colors.count == 3) && (fillings.count == 1 || fillings.count == 3)
-        
-        return isSet
+        return true
     }
     
 /// Create the deck then shuffle. After that, fill up the table considering game range
     init() {
         deck = []
-        gameRange = lowerCardLimit
+        gameRange = standarCardCount
         score = 0
         for number in Card.Number.allCases {
             for shape in Card.Shape.allCases {
                 for color in Card.Color.allCases {
-                    for filling in Card.Filling.allCases {
-                        let card = Card(shape: shape, color: color, filling: filling, number: number)
+    //                for filling in Card.Filling.allCases {
+                        let card = Card(shape: shape, color: color, filling: .outlined, number: number)
                         deck += [card]
-                    }
+   //                 }
                 }
             }
         }
@@ -112,10 +133,13 @@ extension Array where Element == Card {
     /// Returns given amount of elements from beginning of the array, and removes them.
     mutating func getFirst(amountOf: Int) -> [Element] {
         var returnCards = [Element]()
-        for _ in 0..<amountOf {
-            returnCards.append(self.removeFirst())
+        if 0 < amountOf && amountOf <= self.count {
+            for _ in 0..<amountOf {
+                returnCards.append(self.removeFirst())
+            }
+            return returnCards
         }
-        return returnCards
+        return []
     }
 }
 
