@@ -13,13 +13,18 @@ class SetGame
     // MARK: - Variables
     private(set) var upperCardLimit = 24
     private(set) var standarCardCount = 12
+    
     var score: Int
+    lazy var succesScore = 60 / gameRange
+    lazy var failScore = Int(0.3 * Double(gameRange))
+    
     var gameRange: Int {
         didSet {
             if gameRange > upperCardLimit { gameRange = upperCardLimit }
             cardsOnTable += deck.getFirst(amountOf: gameRange - cardsOnTable.count)
         }
     }
+    
     private(set) var deck = [Card]()
     private(set) var cardsOnTable: [Card]
     
@@ -78,10 +83,10 @@ class SetGame
             
             if didThreeCardSelected {
                 if checkIfMatch() {
-                    score += 60 / gameRange
+                    score += succesScore
                     cardsOnTable.indices.forEach() { if cardsOnTable[$0].isSelected { cardsOnTable[$0].isMatched = true } }
                 } else {
-                    score -= Int(0.3 * Double(gameRange))
+                    score -= failScore
                     cardsOnTable.indices.forEach() { if cardsOnTable[$0].isSelected { cardsOnTable[$0].isMatched = false } }
                 }
             }
@@ -106,7 +111,7 @@ class SetGame
             numbers.insert(card.number); shapes.insert(card.shape); colors.insert(card.color); fillings.insert(card.filling)
         }
         let isSet = (numbers.count == 1 || numbers.count == 3) && (shapes.count == 1 || shapes.count == 3) && (colors.count == 1 || colors.count == 3) && (fillings.count == 1 || fillings.count == 3)
-        return true
+        return isSet
     }
     
 /// Create the deck then shuffle. After that, fill up the table considering game range
@@ -117,10 +122,10 @@ class SetGame
         for number in Card.Number.allCases {
             for shape in Card.Shape.allCases {
                 for color in Card.Color.allCases {
-    //                for filling in Card.Filling.allCases {
-                        let card = Card(shape: shape, color: color, filling: .outlined, number: number)
+                    for filling in Card.Filling.allCases {
+                        let card = Card(shape: shape, color: color, filling: filling, number: number)
                         deck += [card]
-   //                 }
+                    }
                 }
             }
         }
