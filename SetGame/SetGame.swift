@@ -133,7 +133,7 @@ extension Array where Element == Card {
     /// Returns given amount of elements from beginning of the array, and removes them.
     mutating func getFirst(amountOf: Int) -> [Element] {
         var returnCards = [Element]()
-        if 0 < amountOf && amountOf < self.count {
+        if 0 < amountOf && amountOf <= self.count {
             for _ in 0..<amountOf {
                 returnCards.append(self.removeFirst())
             }

@@ -65,7 +65,7 @@ class GameViewController: UIViewController {
     /// Update the cards on the table
     private func updateViews() {
         scoreLabel.text = "Score: \(game.score)"
-        dealThreeMoreCardsButton.isEnabled = game.didThreeCardSelected || game.gameRange < 24 && game.deck.count > 2
+        dealThreeMoreCardsButton.isEnabled = game.didThreeCardSelected || (game.gameRange < 24 && game.deck.count > 2)
         
         for index in 0..<game.gameRange {
             let button = cardCollection[index]
